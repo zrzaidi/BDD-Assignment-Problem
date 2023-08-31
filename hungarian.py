@@ -52,7 +52,7 @@ def mark_matrix(mat):
     while check_switch:
         check_switch = False
         for i in range(len(non_marked_row)):
-            row_array = zero_bool_mat.iloc[non_marked_row[i], :]
+            row_array = zero_bool_mat[non_marked_row[i], :]
             for j in range(row_array.shape[0]):
                 #step 2-2-2
                 if row_array[j] == True and j not in marked_cols:
@@ -112,13 +112,15 @@ def hungarian(ranks, capacities):
     #print(ranks.iloc[[0]])
     num_doctors = ranks.shape[0]
     num_hospitals = ranks.shape[1]
+    print(np.min(ranks.iloc[[0]]))
     for row in range(num_doctors):
-        ranks.iloc[[row]] = ranks.iloc[[row]] - np.min(ranks.iloc[[row]])
+        ranks.iloc[[row]] = ranks.iloc[[row]] - np.min(ranks.iloc[[row]].values)
     
     for col in range(num_hospitals):
-        ranks.iloc[:,col] = ranks.iloc[:,col] - np.min(ranks.iloc[:,col])
+        ranks.iloc[:,col] = ranks.iloc[:,col] - np.min(ranks.iloc[:,col].values)
 
-    
+    ranks = ranks.to_numpy()
+    #print(ranks)
     zero_count = 0
     dim = num_doctors
     while zero_count < dim:
@@ -140,8 +142,9 @@ def ans_calculation(mat, pos):
 	return total, ans_mat
 
 
-df = pd.DataFrame(np.random.randint(1,4,size=(5, 3)), columns=list('ABC'))
-cap = [2,7,5]
+df = pd.DataFrame(np.random.randint(1,8,size=(10, 7)), columns=list('ABCDEFG'))
+cap = [2,7,5,6,8,2,3,1]
 ans_pos = hungarian(df.copy(),cap)#Get the element position.
 ans, ans_mat = ans_calculation(df, ans_pos)#Get the minimum or maximum value and corresponding matrix.
-print(ans,ans_mat)
+print(ans_mat)
+
