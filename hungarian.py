@@ -112,13 +112,14 @@ def hungarian(ranks, capacities):
     #print(ranks.iloc[[0]])
     num_doctors = ranks.shape[0]
     num_hospitals = ranks.shape[1]
-    print(np.min(ranks.iloc[[0]]))
+    #print(ranks)
     for row in range(num_doctors):
         ranks.iloc[[row]] = ranks.iloc[[row]] - np.min(ranks.iloc[[row]].values)
     
     for col in range(num_hospitals):
         ranks.iloc[:,col] = ranks.iloc[:,col] - np.min(ranks.iloc[:,col].values)
 
+    print(ranks)
     ranks = ranks.to_numpy()
     #print(ranks)
     zero_count = 0
@@ -133,18 +134,46 @@ def hungarian(ranks, capacities):
     
     return ans_pos
 
-def ans_calculation(mat, pos):
-	total = 0
-	ans_mat = np.zeros((mat.shape[0], mat.shape[1]))
-	for i in range(len(pos)):
-		total += mat[pos[i][0], pos[i][1]]
-		ans_mat[pos[i][0], pos[i][1]] = mat[pos[i][0], pos[i][1]]
-	return total, ans_mat
+def ans_calculation(mat, pos, capacities):
+    ranks = mat
+    for columnName,capacity in zip(ranks,capacities):
+        for i in range(capacity-1):
+            ranks[columnName + '.' + str(i+2)] = ranks.loc[:, columnName]
+    #print(ranks)
+    num_doctors = ranks.shape[0]
+    num_hospitals = ranks.shape[1]
+    #print([ranks.values.max()]*num_hospitals)
+    for i in range(num_hospitals - num_doctors):
+        ranks.loc[len(ranks)] = [ranks.values.max()]*num_hospitals
+    #print(ranks.iloc[[0]])
+    num_doctors = ranks.shape[0]
+    num_hospitals = ranks.shape[1]
+    #print(ranks)
+    for row in range(num_doctors):
+        ranks.iloc[[row]] = ranks.iloc[[row]] - np.min(ranks.iloc[[row]].values)
+    
+    for col in range(num_hospitals):
+        ranks.iloc[:,col] = ranks.iloc[:,col] - np.min(ranks.iloc[:,col].values)
+
+    #print(ranks)
+    mat = ranks.to_numpy()
+    total = 0
+    ans_mat = np.zeros((mat.shape[0], mat.shape[1]))
+    for i in range(len(pos)):
+        total += mat[pos[i][0], pos[i][1]]
+        ans_mat[pos[i][0], pos[i][1]] = mat[pos[i][0], pos[i][1]]
+    return total, ans_mat
 
 
-df = pd.DataFrame(np.random.randint(1,8,size=(10, 7)), columns=list('ABCDEFG'))
-cap = [2,7,5,6,8,2,3,1]
+#df = pd.DataFrame(np.random.randint(1,3,size=(5, 3)), columns=list('ABC'))
+ranks = np.array([[1, 2, 3],
+				[3, 2, 1],
+				[3, 1, 2],
+				[1, 3, 2],
+				[3, 2, 1]])
+df = pd.DataFrame(ranks, columns=['A','B','C'])
+cap = [2,3,2]
 ans_pos = hungarian(df.copy(),cap)#Get the element position.
-ans, ans_mat = ans_calculation(df, ans_pos)#Get the minimum or maximum value and corresponding matrix.
+ans, ans_mat = ans_calculation(df, ans_pos,cap)#Get the minimum or maximum value and corresponding matrix.
 print(ans_mat)
 
