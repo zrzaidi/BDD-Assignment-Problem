@@ -1,5 +1,5 @@
 import numpy as np
-
+import pandas as pd
 def min_zero_row(zero_mat, mark_zero):
 
 	'''
@@ -99,7 +99,7 @@ def hungarian_algorithm(mat):
 	dim = mat.shape[0]
 	cur_mat = mat
 
-	#Step 1 - Every column and every row subtract its internal minimum
+	# every column and every row subtract its internal minimum
 	for row_num in range(mat.shape[0]):
 		cur_mat[row_num] = cur_mat[row_num] - np.min(cur_mat[row_num])
 
@@ -123,64 +123,3 @@ def ans_calculation(mat, pos):
 		total += mat[pos[i][0], pos[i][1]]
 		ans_mat[pos[i][0], pos[i][1]] = mat[pos[i][0], pos[i][1]]
 	return total, ans_mat
-
-def main():
-
-	'''Hungarian Algorithm:
-	Finding the minimum value in linear assignment problem.
-	Therefore, we can find the minimum value set in net matrix
-	by using Hungarian Algorithm. In other words, the maximum value
-	and elements set in cost matrix are available.'''
-
-	#The matrix who you want to find the minimum sum
-	ranks = np.array([[7, 6, 2, 9, 2],
-				[6, 2, 1, 3, 9],
-				[5, 6, 8, 9, 5],
-				[6, 8, 5, 8, 6],
-				[9, 5, 6, 4, 7]])
-	ranks = pd.DataFrame(ranks, columns=['A','B','C','D','E'])
-	capacities=[3,4,5,2,1,4]
-
-	for columnName,capacity in zip(ranks,capacities):
-		for i in range(capacity-1):
-			ranks[columnName + '.' + str(i+2)] = ranks.loc[:, columnName]
-    #print(ranks)
-	num_doctors = ranks.shape[0]
-	num_hospitals = ranks.shape[1]
-    #print([ranks.values.max()]*num_hospitals)
-	for i in range(num_hospitals - num_doctors):
-		ranks.loc[len(ranks)] = [ranks.values.max()]*num_hospitals
-    #print(ranks.iloc[[0]])
-	num_doctors = ranks.shape[0]
-	num_hospitals = ranks.shape[1]
-	#print(ranks)
-	# for row in range(num_doctors):
-	# 	ranks.iloc[[row]] = ranks.iloc[[row]] - np.min(ranks.iloc[[row]].values)
-	# print(ranks)
-	# for col in range(num_hospitals):
-	# 	ranks.iloc[:,col] = ranks.iloc[:,col] - np.min(ranks.iloc[:,col].values)
-	cost_matrix=ranks.to_numpy()
-	#print(ranks)
-	ans_pos = hungarian_algorithm(cost_matrix.copy())#Get the element position.
-	ans, ans_mat = ans_calculation(cost_matrix, ans_pos)#Get the minimum or maximum value and corresponding matrix.
-
-	#Show the result
-	print(f"Linear Assignment problem result: {ans:.0f}\n{ans_mat}")
-
-	#If you want to find the maximum value, using the code as follows:
-	#Using maximum value in the cost_matrix and cost_matrix to get net_matrix
-	profit_matrix = np.array([[7, 6, 2, 9, 2],
-				[6, 2, 1, 3, 9],
-				[5, 6, 8, 9, 5],
-				[6, 8, 5, 8, 6],
-				[9, 5, 6, 4, 7]])
-	max_value = np.max(profit_matrix)
-	cost_matrix = max_value - profit_matrix
-	ans_pos = hungarian_algorithm(cost_matrix.copy())#Get the element position.
-	ans, ans_mat = ans_calculation(profit_matrix, ans_pos)#Get the minimum or maximum value and corresponding matrix.
-	#Show the result
-	print(f"Linear Assignment problem result: {ans:.0f}\n{ans_mat}")
-
-if __name__ == '__main__':
-	main()
-
