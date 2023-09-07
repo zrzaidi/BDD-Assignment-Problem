@@ -30,30 +30,32 @@ def get_hospitals_with_capacities():
 
     return hospitals, capacities
 
-# Get the number of residents
-num_residents = get_integer_input("Enter the number of residents to be assigned: ")
+def get_inputs():
+    # Get the number of residents
+    num_residents = get_integer_input("Enter the number of residents to be assigned: ")
 
-# Get hospitals and their capacities as separate lists
-hospital_names, hospital_capacities = get_hospitals_with_capacities()
+    # Get hospitals and their capacities as separate lists
+    hospital_names, hospital_capacities = get_hospitals_with_capacities()
+    residents = []
 
-residents = []
+    # Get rankings from each resident
+    rankings = []
 
-# Get rankings from each resident
-rankings = []
+    for i in range(num_residents):
+        resident_name = input(f"Enter the name of resident {i + 1}: ")
+        residents.append(resident_name)
 
-for i in range(num_residents):
-    resident_name = input(f"Enter the name of resident {i + 1}: ")
-    residents.append(resident_name)
+        resident_rankings = get_list_input(f"Enter hospital rankings for {resident_name} (comma-separated):")
+        resident_rankings = [int(rank) for rank in resident_rankings]
+        rankings.append(resident_rankings)
 
-    resident_rankings = get_list_input(f"Enter hospital rankings for {resident_name} (comma-separated):")
-    resident_rankings = [int(rank) for rank in resident_rankings]
-    rankings.append(resident_rankings)
+    # Create a cost matrix from the 'rankings' list
+    cost_matrix = np.array(rankings)
 
-# Create a cost matrix from the 'rankings' list
-cost_matrix = np.array(rankings)
+    # Convert the NumPy matrix to a Pandas dataframe by row
+    df = pd.DataFrame(cost_matrix, columns= hospital_names)
+    df.index = residents
 
-# Convert the NumPy matrix to a Pandas dataframe by row
-df = pd.DataFrame(cost_matrix, columns= hospital_names)
-df.index = residents
-
-display(df) # can comment out
+    display(df) # can comment out
+    
+    return df, residents, hospital_capacities
