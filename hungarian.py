@@ -2,12 +2,13 @@ import numpy as np
 import pandas as pd
 from matrix_adjust import *
 
+#Following code provided by following link:  https://python.plainenglish.io/hungarian-algorithm-introduction-python-implementation-93e7c0890e15
+
 def min_zero_row(zero_mat, mark_zero):
 
     '''
-    The function can be splitted into two steps:
-    #1 The function is used to find the row which containing the fewest 0.
-    #2 Select the zero number on the row, and then marked the element corresponding row and column as False
+    Find the row which containing the fewest 0.
+    Select the zero number on the row, and then markethe element corresponding row and column as False
     '''
 
     #Find the row
@@ -56,19 +57,19 @@ def mark_matrix(mat):
         for i in range(len(non_marked_row)):
             row_array = zero_bool_mat[non_marked_row[i], :]
             for j in range(row_array.shape[0]):
-                #Step 2-2-2
+                #mark rows that do not contain marked 0 elements
                 if row_array[j] == True and j not in marked_cols:
-                    #Step 2-2-3
+                    #store column indices
                     marked_cols.append(j)
                     check_switch = True
 
         for row_num, col_num in marked_zero:
-            #Step 2-2-4
+            #compare column indices
             if row_num not in non_marked_row and col_num in marked_cols:
-                #Step 2-2-5
+                #save if matching column index exists
                 non_marked_row.append(row_num)
                 check_switch = True
-    #Step 2-2-6
+    #row indices not in non_marked_row stored in marked_rows
     marked_rows = list(set(range(mat.shape[0])) - set(non_marked_row))
 
     return(marked_zero, marked_rows, marked_cols)
@@ -77,7 +78,7 @@ def adjust_matrix(mat, cover_rows, cover_cols):
     cur_mat = mat
     non_zero_element = []
 
-    #Step 4-1
+    #find minimum value for element not marked
     for row in range(len(cur_mat)):
         if row not in cover_rows:
             for i in range(len(cur_mat[row])):
@@ -85,21 +86,19 @@ def adjust_matrix(mat, cover_rows, cover_cols):
                     non_zero_element.append(cur_mat[row][i])
     min_num = min(non_zero_element)
 
-    #Step 4-2
+    #subtract unmarked elements from minimum values
     for row in range(len(cur_mat)):
         if row not in cover_rows:
             for i in range(len(cur_mat[row])):
                 if i not in cover_cols:
                     cur_mat[row, i] = cur_mat[row, i] - min_num
-    #Step 4-3
+    #add element in marked_rows to minimum value previously obtained
     for row in range(len(cover_rows)):
         for col in range(len(cover_cols)):
             cur_mat[cover_rows[row], cover_cols[col]] = cur_mat[cover_rows[row], cover_cols[col]] + min_num
     return cur_mat
 
 def hungarian_algorithm(mat):
-    
-    #mat, col_names = matrix_with_capacities(mat, capacities)
 
     dim = mat.shape[0]
     cur_mat = mat
@@ -112,7 +111,6 @@ def hungarian_algorithm(mat):
         cur_mat[:,col_num] = cur_mat[:,col_num] - np.min(cur_mat[:,col_num])
     zero_count = 0
     while zero_count < dim:
-        #Step 2 & 3
         ans_pos, marked_rows, marked_cols = mark_matrix(cur_mat)
         zero_count = len(marked_rows) + len(marked_cols)
 
