@@ -10,6 +10,8 @@ To allow the Hungarian algorithm to take into account the capacity of each hospi
 
 We assume that there are more residency spots than there are residents and that every resident provides a ranking for every hospital.
 
+Team members: Zayn Zaidi, Emma Cardenas
+
 References:
 https://python.plainenglish.io/hungarian-algorithm-introduction-python-implementation-93e7c0890e15
 https://www.thinkautonomous.ai/blog/hungarian-algorithm/
